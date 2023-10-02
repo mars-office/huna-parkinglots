@@ -1,13 +1,35 @@
-import express, { Request, Response , Application } from 'express';
-import dotenv from 'dotenv';
+import express, { Request, Response, Application } from "express";
+import dotenv from "dotenv";
+import axios from "axios";
 
-// For env File 
+// For env File
 dotenv.config();
 
 const app: Application = express();
 
-app.get('/api/gpt/health', (req: Request, res: Response) => {
-  res.send('OK');
+app.use(async (req, res, next) => {
+  const opaRequest = {
+    input: {
+      url: req.url,
+      headers: req.headers,
+      method: req.method.toUpperCase(),
+      service: 'huna-gpt'
+    },
+  };
+  const response = await axios.post(
+    "http://localhost:8181/v1/com/huna/allow",
+    opaRequest
+  );
+  const allowed = response.data.result.allow;
+  if (allowed) {
+    next();
+  } else {
+    res.sendStatus(403);
+  }
+});
+
+app.get("/api/gpt/health", (req: Request, res: Response) => {
+  res.send("OK");
 });
 
 app.listen(3001, () => {
