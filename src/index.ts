@@ -20,7 +20,7 @@ app.use(async (req, res, next) => {
     "http://localhost:8181/v1/data/com/huna/allow",
     opaRequest
   );
-  const allowed = response.data.result.allow;
+  const allowed = response.data.result;
   if (allowed) {
     next();
   } else {
