@@ -1,2 +1,2 @@
 #!/bin/sh
-telepresence leave namespace-release-template-deployable-namespace
+telepresence leave huna-huna-gpt-huna
