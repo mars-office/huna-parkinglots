@@ -17,7 +17,7 @@ app.use(async (req, res, next) => {
     },
   };
   const response = await axios.post(
-    "http://localhost:8181/v1/com/huna/allow",
+    "http://localhost:8181/v1/data/com/huna/allow",
     opaRequest
   );
   const allowed = response.data.result.allow;
