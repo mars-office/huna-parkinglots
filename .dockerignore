@@ -23,6 +23,7 @@ intercept.sh
 stop.sh
 chart/
 .vscode/
+.env
 ### Linux ###
 *~
 # Created by https://www.toptal.com/developers/gitignore/api/node
