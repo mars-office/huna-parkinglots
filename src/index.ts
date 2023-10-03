@@ -13,18 +13,22 @@ app.use(async (req, res, next) => {
       url: req.url,
       headers: req.headers,
       method: req.method.toUpperCase(),
-      service: 'huna-gpt'
+      service: "huna-gpt",
     },
   };
-  const response = await axios.post(
-    "http://localhost:8181/v1/data/com/huna/allow",
-    opaRequest
-  );
-  const allowed = response.data.result;
-  if (allowed) {
-    next();
-  } else {
-    res.sendStatus(403);
+  try {
+    const response = await axios.post(
+      "http://localhost:8181/v1/data/com/huna/allow",
+      opaRequest
+    );
+    const allowed = response.data.result;
+    if (allowed) {
+      next();
+    } else {
+      res.sendStatus(403);
+    }
+  } catch (err: any) {
+    res.sendStatus(500);
   }
 });
 
