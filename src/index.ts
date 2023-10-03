@@ -14,6 +14,7 @@ app.use(async (req, res, next) => {
       headers: req.headers,
       method: req.method.toUpperCase(),
       service: "huna-gpt",
+      remoteAddress: req.ip
     },
   };
   const response = await axios.post(
