@@ -32,6 +32,10 @@ app.get("/api/gpt/health", (req: Request, res: Response) => {
   res.send("OK");
 });
 
+app.get("/api/gpt/test", (req: Request, res: Response) => {
+  res.send("Test OK");
+});
+
 app.listen(3001, () => {
   console.log(`Server is Fire at http://localhost:3001`);
 });
