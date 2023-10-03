@@ -37,7 +37,7 @@ app.get("/api/gpt/health", (req: Request, res: Response) => {
 });
 
 app.get("/api/gpt/test", (req: Request, res: Response) => {
-  res.send("Test OK");
+  res.send("Test OK 22222");
 });
 
 
