@@ -1,4 +1,4 @@
-import express, { Request, Response, Application } from "express";
+import express, { Request, Response, Application, NextFunction } from "express";
 import dotenv from "dotenv";
 import axios from "axios";
 
@@ -16,21 +16,20 @@ app.use(async (req, res, next) => {
       service: "huna-gpt",
     },
   };
-  try {
-    const response = await axios.post(
-      "http://localhost:8181/v1/data/com/huna/allow",
-      opaRequest
-    );
-    const allowed = response.data.result;
-    if (allowed) {
-      next();
-    } else {
-      res.sendStatus(403);
-    }
-  } catch (err: any) {
-    res.sendStatus(500);
+  const response = await axios.post(
+    "http://localhost:8181/v1/data/com/huna/allow",
+    opaRequest
+  );
+  const allowed = response.data.result;
+  if (allowed) {
+    next();
+  } else {
+    res.sendStatus(403);
   }
 });
+
+
+
 
 app.get("/api/gpt/health", (req: Request, res: Response) => {
   res.send("OK");
@@ -39,6 +38,18 @@ app.get("/api/gpt/health", (req: Request, res: Response) => {
 app.get("/api/gpt/test", (req: Request, res: Response) => {
   res.send("Test OK");
 });
+
+
+
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  const statusCode = res.statusCode ? res.statusCode : 500;
+  res.status(statusCode);
+  res.json({
+    error: err?.message,
+  });
+});
+
 
 app.listen(3001, () => {
   console.log(`Server is Fire at http://localhost:3001`);
