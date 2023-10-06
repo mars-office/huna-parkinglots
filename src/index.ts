@@ -5,6 +5,8 @@ import axios from "axios";
 // For env File
 dotenv.config();
 
+import "./tracing";
+
 const app: Application = express();
 
 app.use(async (req, res, next) => {
@@ -22,7 +24,7 @@ app.use(async (req, res, next) => {
     },
   };
   const response = await axios.post(
-    "http://localhost:8181/v1/data/com/huna/allow",
+    `http://127.0.0.1:8181/v1/data/com/huna/allow`,
     opaRequest
   );
   const allowed = response.data.result;
