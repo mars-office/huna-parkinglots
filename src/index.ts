@@ -8,6 +8,10 @@ dotenv.config();
 const app: Application = express();
 
 app.use(async (req, res, next) => {
+  if (req.url === '/api/gpt/health') {
+    next();
+    return;
+  }
   const opaRequest = {
     input: {
       url: req.url,
