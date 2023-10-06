@@ -5,12 +5,10 @@ import axios from "axios";
 // For env File
 dotenv.config();
 
-import "./tracing";
-
 const app: Application = express();
 
 app.use(async (req, res, next) => {
-  if (req.url === '/api/gpt/health') {
+  if (req.url === "/api/gpt/health") {
     next();
     return;
   }
@@ -20,7 +18,7 @@ app.use(async (req, res, next) => {
       headers: req.headers,
       method: req.method.toUpperCase(),
       service: "huna-gpt",
-      remoteAddress: req.ip
+      remoteAddress: req.ip,
     },
   };
   const response = await axios.post(
@@ -35,9 +33,6 @@ app.use(async (req, res, next) => {
   }
 });
 
-
-
-
 app.get("/api/gpt/health", (req: Request, res: Response) => {
   res.send("OK");
 });
@@ -46,9 +41,6 @@ app.get("/api/gpt/test", (req: Request, res: Response) => {
   res.send("Test OK 22222");
 });
 
-
-
-
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   const statusCode = res.statusCode ? res.statusCode : 500;
   res.status(statusCode);
@@ -56,7 +48,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     error: err?.message,
   });
 });
-
 
 app.listen(3001, () => {
   console.log(`Server is Fire at http://localhost:3001`);
