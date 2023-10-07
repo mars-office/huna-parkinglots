@@ -1,2 +1,2 @@
 #!/bin/sh
-telepresence leave huna-huna-gpt-huna
+telepresence leave huna-huna-gpt

@@ -1,2 +1,3 @@
 #!/bin/sh
-telepresence intercept huna-huna-gpt --namespace huna --port 3001:http --env-file ./.env || true
+telepresence connect -n huna
+telepresence intercept huna-huna-gpt --port 3001:http --env-file ./.env || true
