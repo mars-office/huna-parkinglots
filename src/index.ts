@@ -52,3 +52,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 app.listen(3001, () => {
   console.log(`Server is Fire at http://localhost:3001`);
 });
+
+process.on('SIGINT', () => {
+  process.exit();
+});
