@@ -1,11 +1,17 @@
 import express, { Request, Response, Application, NextFunction } from "express";
 import dotenv from "dotenv";
 import axios from "axios";
+import { MongoClient } from 'mongodb';
 
 // For env File
 dotenv.config();
 
 const app: Application = express();
+
+const mongoClient = new MongoClient(`mongodb://admin:${process.env.MONGODB_PASSWORD}@huna-mongodb:27017/`, {
+  appName: 'huna-gpt',
+});
+const db = mongoClient.db('huna-gpt')
 
 app.use(async (req, res, next) => {
   if (req.url === "/api/gpt/health") {
@@ -37,7 +43,9 @@ app.get("/api/gpt/health", (req: Request, res: Response) => {
   res.send("OK");
 });
 
-app.get("/api/gpt/test", (req: Request, res: Response) => {
+app.get("/api/gpt/test", async (req: Request, res: Response) => {
+  const dbTest = await db.collection('gigel').find().toArray();
+  console.log(dbTest);
   res.send("Test OK 22222");
 });
 
