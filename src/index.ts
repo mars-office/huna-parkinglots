@@ -1,17 +1,23 @@
 import express, { Request, Response, Application, NextFunction } from "express";
 import dotenv from "dotenv";
 import axios from "axios";
-import { MongoClient } from 'mongodb';
+import { MongoClient } from "mongodb";
+import morgan from "morgan";
 
 // For env File
 dotenv.config();
 
 const app: Application = express();
+app.use(express.json());
+app.use(morgan("tiny"));
 
-const mongoClient = new MongoClient(`mongodb://admin:${process.env.MONGODB_PASSWORD}@huna-mongodb:27017/`, {
-  appName: 'huna-gpt',
-});
-const db = mongoClient.db('huna-gpt')
+const mongoClient = new MongoClient(
+  `mongodb://admin:${process.env.MONGODB_PASSWORD}@huna-mongodb:27017/`,
+  {
+    appName: "huna-gpt",
+  }
+);
+const db = mongoClient.db("huna-gpt");
 
 app.use(async (req, res, next) => {
   if (req.url === "/api/gpt/health") {
@@ -44,9 +50,9 @@ app.get("/api/gpt/health", (req: Request, res: Response) => {
 });
 
 app.get("/api/gpt/test", async (req: Request, res: Response) => {
-  const dbTest = await db.collection('gigel').find().toArray();
+  const dbTest = await db.collection("gigel").find().toArray();
   console.log(dbTest);
-  res.send("Test OK 22222");
+  res.send("Test OK 3333");
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -61,6 +67,6 @@ app.listen(3001, () => {
   console.log(`Server is Fire at http://localhost:3001`);
 });
 
-process.on('SIGINT', () => {
+process.on("SIGINT", () => {
   process.exit();
 });
