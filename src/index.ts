@@ -1,11 +1,11 @@
-import express, { Request, Response, Application, NextFunction } from "express";
 import dotenv from "dotenv";
+dotenv.config();
+import '@opentelemetry/auto-instrumentations-node/register';
+import express, { Request, Response, Application, NextFunction } from "express";
 import axios from "axios";
 import { MongoClient } from "mongodb";
 import morgan from "morgan";
 
-// For env File
-dotenv.config();
 
 const app: Application = express();
 app.use(express.json());
@@ -64,7 +64,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.listen(3001, () => {
-  console.log(`Server is Fire at http://localhost:3001`);
+  console.log(`Server is listening on http://localhost:3001`);
 });
 
 process.on("SIGINT", () => {
