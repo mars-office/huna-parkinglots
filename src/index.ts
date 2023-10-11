@@ -1,67 +1,28 @@
 import dotenv from "dotenv";
-dotenv.config();
-import '@opentelemetry/auto-instrumentations-node/register';
-import express, { Request, Response, Application, NextFunction } from "express";
-import axios from "axios";
-import { MongoClient } from "mongodb";
+import express, { Application } from "express";
 import morgan from "morgan";
+import opaAuthzMiddleware from "./middlewares/opa-authz.middleware";
+import globalErrorHandlerMiddleware from "./middlewares/global-error-handler.middleware";
+import testRouter from "./routes/test.route";
+import healthCheckRouter from "./routes/health-check.route";
 
-
+dotenv.config();
+const env = process.env.NODE_ENV || "local";
 const app: Application = express();
 app.use(express.json());
-app.use(morgan("tiny"));
+app.use(morgan(
+  env === "local" ? "dev" : "common"
+));
 
-const mongoClient = new MongoClient(
-  `mongodb://admin:${process.env.MONGODB_PASSWORD}@huna-mongodb:27017/`,
-  {
-    appName: "huna-gpt",
-  }
-);
-const db = mongoClient.db("huna-gpt");
+// Public routes
+app.use(healthCheckRouter);
 
-app.use(async (req, res, next) => {
-  if (req.url === "/api/gpt/health") {
-    next();
-    return;
-  }
-  const opaRequest = {
-    input: {
-      url: req.url,
-      headers: req.headers,
-      method: req.method.toUpperCase(),
-      service: "huna-gpt",
-      remoteAddress: req.ip,
-    },
-  };
-  const response = await axios.post(
-    `http://127.0.0.1:8181/v1/data/com/huna/allow`,
-    opaRequest
-  );
-  const allowed = response.data.result;
-  if (allowed) {
-    next();
-  } else {
-    res.sendStatus(403);
-  }
-});
+// Secure routes
+app.use(opaAuthzMiddleware);
+app.use(testRouter);
 
-app.get("/api/gpt/health", (req: Request, res: Response) => {
-  res.send("OK");
-});
-
-app.get("/api/gpt/test", async (req: Request, res: Response) => {
-  const dbTest = await db.collection("gigel").find().toArray();
-  console.log(dbTest);
-  res.send("Test OK 3333");
-});
-
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  const statusCode = res.statusCode ? res.statusCode : 500;
-  res.status(statusCode);
-  res.json({
-    error: err?.message,
-  });
-});
+// Error handler, should always be LAST use()
+app.use(globalErrorHandlerMiddleware);
 
 app.listen(3001, () => {
   console.log(`Server is listening on http://localhost:3001`);
