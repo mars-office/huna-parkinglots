@@ -7,6 +7,7 @@
 *.orig
 .gitignore
 coverage
+Dockerfile
 .git
 .github/
 # Created by git when using merge tools for conflicts
