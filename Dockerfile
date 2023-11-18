@@ -7,8 +7,8 @@ COPY . .
 RUN npm run build
 ARG TARGETPLATFORM
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  npm run test \
-fi
+    npm run test \
+  fi
 
 CMD npm run prod
 
