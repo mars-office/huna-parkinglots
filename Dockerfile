@@ -6,10 +6,7 @@ RUN npm i
 COPY . .
 RUN npm run build
 ARG TARGETPLATFORM
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-    npm run test \
-  fi
-
+RUN [ "$TARGETPLATFORM" = "linux/amd64" ] && npm run test || echo "Skipping tests on ARM64"
 CMD npm run prod
 
 EXPOSE 3001
