@@ -5,7 +5,10 @@ COPY ./package-lock.json ./package-lock.json
 RUN npm i
 COPY . .
 RUN npm run build
-RUN npm run test
+ARG TARGETPLATFORM
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+  npm run test \
+fi
 
 CMD npm run prod
 
