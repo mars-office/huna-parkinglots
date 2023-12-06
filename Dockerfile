@@ -9,5 +9,5 @@ ARG TARGETPLATFORM
 RUN [ "$TARGETPLATFORM" = "linux/amd64" ] && npm run test || echo "Skipping tests on ARM64"
 CMD npm run prod
 
-EXPOSE 3001
+EXPOSE 3002
 LABEL org.opencontainers.image.source=https://github.com/mars-office/huna-parkinglots
