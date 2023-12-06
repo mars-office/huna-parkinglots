@@ -16,11 +16,13 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     },
   };
   const response = await axios.post(
-    `http://127.0.0.1:8181/v1/data/com/huna/allow`,
+    `http://127.0.0.1:8181/v1/data/com/huna/authz`,
     opaRequest
   );
-  const allowed = response.data.result;
-  if (allowed) {
+  const opaResponse = response.data?.result;
+  if (opaResponse && opaResponse.allow) {
+    (req as any).user = opaResponse.user;
+    (req as any).user.isAdmin = opaResponse.is_admin || false;
     next();
   } else {
     res.sendStatus(403);
