@@ -2,7 +2,7 @@ import axios from "axios";
 import { Request, Response, NextFunction } from "express";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
-  if (req.url === "/api/gpt/health") {
+  if (req.url === "/api/parkinglots/health") {
     next();
     return;
   }
@@ -11,7 +11,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       url: req.url,
       headers: req.headers,
       method: req.method.toUpperCase(),
-      service: "huna-gpt",
+      service: "huna-parkinglots",
       remoteAddress: req.ip,
     },
   };

@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/mars-office/huna-gpt
+  repository: ghcr.io/mars-office/huna-parkinglots
   pullPolicy: IfNotPresent
   tag: ""
 
@@ -39,7 +39,7 @@ ingress:
   className: ""
   annotations: {}
   hosts:
-    - host: huna-gpt.local.marsconceptor.com
+    - host: huna-parkinglots.local.marsconceptor.com
       paths:
         - path: /
           pathType: ImplementationSpecific

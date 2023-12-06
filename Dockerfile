@@ -10,4 +10,4 @@ RUN [ "$TARGETPLATFORM" = "linux/amd64" ] && npm run test || echo "Skipping test
 CMD npm run prod
 
 EXPOSE 3001
-LABEL org.opencontainers.image.source=https://github.com/mars-office/huna-gpt
+LABEL org.opencontainers.image.source=https://github.com/mars-office/huna-parkinglots

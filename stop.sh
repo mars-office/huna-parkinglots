@@ -1,2 +1,2 @@
 #!/bin/sh
-telepresence leave huna-huna-gpt
+telepresence leave huna-huna-parkinglots
