@@ -10,7 +10,7 @@ export const tlsService = {
     clientCertReq.publicKey = keys.publicKey;
     clientCertReq.setSubject([
       { name: "commonName", value: commonName },
-      { name: "server", value: process.env.HUNA_SERVER_HOSTNAME! },
+      { name: 'organizationName', value: process.env.HUNA_SERVER_HOSTNAME!, type: 'organizationName' }
     ]);
     clientCertReq.sign(clientKey);
     const clientCert = forge.pki.createCertificate();

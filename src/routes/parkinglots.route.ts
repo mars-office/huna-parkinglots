@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import { ParkingLotEntity } from "../entities/parking-lot.entity";
 import { ParkingLotDto } from "../dto/parking-lot.dto";
 import tlsService from "../services/tls.service";
+import { DownloadCertificateBundleResponseDto } from "../dto/download-certificate-bundle-response.dto";
 
 const parkinglotsRouter = Router();
 
@@ -29,7 +30,7 @@ parkinglotsRouter.get(
 );
 
 parkinglotsRouter.get(
-  "/api/parkinglots/admin/parkinglots/:id",
+  "/api/parkinglots/admin/parkinglots/:id/certificate",
   async (req: Request, res: Response) => {
     const id = req.params.id;
     const parkingLot = await db
@@ -38,9 +39,8 @@ parkinglotsRouter.get(
         { _id: new ObjectId(id) },
         {
           projection: {
-            name: 1,
-            lat: 1,
-            lng: 1,
+            clientCertificateCrt: 1,
+            clientCertificateKey: 1
           },
         }
       );
@@ -49,9 +49,11 @@ parkinglotsRouter.get(
       return;
     }
     res.send({
-      ...parkingLot,
       _id: parkingLot._id.toString(),
-    } as ParkingLotDto);
+      clientCertificateCrt: parkingLot.clientCertificateCrt,
+      clientCertificateKey: parkingLot.clientCertificateKey,
+      caCrt: process.env.IOT_CA_CRT!
+    } as DownloadCertificateBundleResponseDto);
   }
 );
 
@@ -92,7 +94,113 @@ parkinglotsRouter.post(
       .collection<ParkingLotEntity>("parkinglots")
       .insertOne(entity);
 
-    res.send({ ...entity, _id: insertResult.insertedId.toString() });
+    res.send({
+      name: entity.name,
+      lat: entity.lat,
+      lng: entity.lng,
+      _id: insertResult.insertedId.toString(),
+    } as ParkingLotDto);
+  }
+);
+
+parkinglotsRouter.put(
+  "/api/parkinglots/admin/parkinglots/:id",
+  async (req: Request, res: Response) => {
+    const dto: ParkingLotDto = req.body;
+    const updateObject: any = {};
+    if (dto.name && dto.name.length > 0) {
+      updateObject.name = dto.name;
+    }
+    if (dto.lat) {
+      updateObject.lat = dto.lat;
+    }
+    if (dto.lng) {
+      updateObject.lng = dto.lng;
+    }
+    const id = new ObjectId(req.params.id);
+    const entity = await db
+      .collection<ParkingLotEntity>("parkinglots")
+      .findOneAndUpdate(
+        { _id: id },
+        {
+          $set: updateObject,
+        }
+      );
+
+    if (entity == null) {
+      res.status(404).send({ error: "Not found" });
+      return;
+    }
+
+    res.send({
+      name: entity.name,
+      lat: entity.lat,
+      lng: entity.lng,
+      _id: entity._id.toString(),
+      ...updateObject,
+    } as ParkingLotDto);
+  }
+);
+
+parkinglotsRouter.put(
+  "/api/parkinglots/admin/parkinglots/:id/regenerate",
+  async (req: Request, res: Response) => {
+    const id = new ObjectId(req.params.id);
+
+    const clientCertificate = tlsService.generateIotClientCertificate(
+      id.toString()
+    );
+
+    const updateObject = {
+      clientCertificateCrt: clientCertificate.clientCertPem,
+      clientCertificateKey: clientCertificate.clientKeyPem,
+    };
+
+    const entity = await db
+      .collection<ParkingLotEntity>("parkinglots")
+      .findOneAndUpdate(
+        { _id: id },
+        {
+          $set: updateObject,
+        }
+      );
+
+    if (entity == null) {
+      res.status(404).send({ error: "Not found" });
+      return;
+    }
+
+    res.send({
+      name: entity.name,
+      lat: entity.lat,
+      lng: entity.lng,
+      _id: entity._id.toString()
+    } as ParkingLotDto);
+  }
+);
+
+parkinglotsRouter.delete(
+  "/api/parkinglots/admin/parkinglots/:id",
+  async (req: Request, res: Response) => {
+    const id = new ObjectId(req.params.id);
+
+    const entity = await db
+      .collection<ParkingLotEntity>("parkinglots")
+      .findOne({ _id: id });
+
+    if (!entity) {
+      res.status(404).send({ error: "Not found" });
+      return;
+    }
+
+    await db.collection<ParkingLotEntity>("parkinglots").deleteOne({ _id: id });
+
+    res.send({
+      name: entity.name,
+      lat: entity.lat,
+      lng: entity.lng,
+      _id: entity._id.toString(),
+    } as ParkingLotDto);
   }
 );
 
