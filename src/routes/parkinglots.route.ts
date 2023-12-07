@@ -5,6 +5,9 @@ import { ParkingLotEntity } from "../entities/parking-lot.entity";
 import { ParkingLotDto } from "../dto/parking-lot.dto";
 import tlsService from "../services/tls.service";
 import { DownloadCertificateBundleResponseDto } from "../dto/download-certificate-bundle-response.dto";
+import { parkingLotDtoValidator } from "../validators/parkinglot-dto.validator";
+import { ValidationError } from "yup";
+import { extractErrorsFromYupException } from "../helpers/validation.helper";
 
 const parkinglotsRouter = Router();
 
@@ -45,7 +48,7 @@ parkinglotsRouter.get(
         }
       );
     if (parkingLot == null) {
-      res.status(404).send({ error: "Not found" });
+      res.status(404).send({ global: ["api.validation.notFound"] });
       return;
     }
     res.send({
@@ -62,18 +65,13 @@ parkinglotsRouter.post(
   async (req: Request, res: Response) => {
     const dto: ParkingLotDto = req.body;
 
-    if (!dto.name || dto.name.length === 0) {
-      res.status(400).send({ error: "Name is required" });
-      return;
-    }
-
-    if (!dto.lat) {
-      res.status(400).send({ error: "Latitude is required" });
-      return;
-    }
-
-    if (!dto.lng) {
-      res.status(400).send({ error: "Longitude is required" });
+    try {
+      await parkingLotDtoValidator.validate(dto, {abortEarly: false});
+    } catch (err) {
+      if (!(err instanceof ValidationError)) {
+        throw new Error('Not a validation error');
+      }
+      res.status(400).send(extractErrorsFromYupException(err));
       return;
     }
 
@@ -128,7 +126,7 @@ parkinglotsRouter.put(
       );
 
     if (entity == null) {
-      res.status(404).send({ error: "Not found" });
+      res.status(404).send({ global: ["api.validation.notFound"] });
       return;
     }
 
@@ -166,7 +164,7 @@ parkinglotsRouter.put(
       );
 
     if (entity == null) {
-      res.status(404).send({ error: "Not found" });
+      res.status(404).send({ global: ["api.validation.notFound"] });
       return;
     }
 
@@ -189,7 +187,7 @@ parkinglotsRouter.delete(
       .findOne({ _id: id });
 
     if (!entity) {
-      res.status(404).send({ error: "Not found" });
+      res.status(404).send({ global: ["api.validation.notFound"] });
       return;
     }
 
