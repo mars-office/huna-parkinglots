@@ -104,7 +104,7 @@ parkinglotsRouter.post(
 parkinglotsRouter.put(
   "/api/parkinglots/admin/parkinglots/:id",
   async (req: Request, res: Response) => {
-    const dto: ParkingLotDto = req.body;
+    const dto: Partial<ParkingLotDto> = req.body;
     const updateObject: any = {};
     if (dto.name && dto.name.length > 0) {
       updateObject.name = dto.name;
