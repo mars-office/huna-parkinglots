@@ -14,15 +14,11 @@ const parkinglotsRouter = Router();
 parkinglotsRouter.get(
   "/api/parkinglots/admin/parkinglots",
   async (req: Request, res: Response) => {
-    const page = req.query.page ? +req.query.page : 1;
-    const elements = req.query.elements ? +req.query.elements : 10;
     const parkingLotsList = await db
       .collection<ParkingLotEntity>("parkinglots")
       .find()
       .project<ParkingLotEntity>({ name: 1, lat: 1, lng: 1 })
       .sort({ name: 1 })
-      .skip((page - 1) * elements)
-      .limit(elements)
       .toArray();
     res.send(
       parkingLotsList.map(
