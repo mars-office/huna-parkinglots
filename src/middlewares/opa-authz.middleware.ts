@@ -21,8 +21,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   );
   const opaResponse = response.data?.result;
   if (opaResponse && opaResponse.allow) {
-    (req as any).user = opaResponse.user;
-    (req as any).user.isAdmin = opaResponse.is_admin || false;
+    if (opaResponse.user) {
+      (req as any).user = opaResponse.user;
+      (req as any).user.isAdmin = opaResponse.is_admin || false;
+    }
     next();
   } else {
     res.sendStatus(403);
