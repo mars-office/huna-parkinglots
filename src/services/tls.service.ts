@@ -4,7 +4,9 @@ export const tlsService = {
   generateIotClientCertificate: (commonName: string) => {
     const caCert = forge.pki.certificateFromPem(process.env.IOT_CA_CRT!);
     const caKey = forge.pki.privateKeyFromPem(process.env.IOT_CA_KEY!);
-    const keys = forge.pki.rsa.generateKeyPair(3072);
+    const keys = forge.pki.rsa.generateKeyPair({
+      algorithm: 
+    });
     const clientKey = keys.privateKey;
     const clientCertReq = forge.pki.createCertificationRequest();
     clientCertReq.publicKey = keys.publicKey;
@@ -33,7 +35,7 @@ export const tlsService = {
       },
       { name: "extKeyUsage", serverAuth: false, clientAuth: true },
     ]);
-    clientCert.sign(caKey);
+    clientCert.sign(caKey, forge.md.sha256.create());
     const clientCertPem = forge.pki.certificateToPem(clientCert);
     const clientKeyPem = forge.pki.privateKeyToPem(clientKey);
 
