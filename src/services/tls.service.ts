@@ -1,4 +1,5 @@
 import forge from "node-forge";
+import crypto from "crypto";
 
 export const tlsService = {
   generateIotClientCertificate: (commonName: string) => {
@@ -6,23 +7,21 @@ export const tlsService = {
     const caKey = forge.pki.privateKeyFromPem(process.env.IOT_CA_KEY!);
     const keys = forge.pki.rsa.generateKeyPair(3072);
     const clientKey = keys.privateKey;
-    const clientCertReq = forge.pki.createCertificationRequest();
-    clientCertReq.publicKey = keys.publicKey;
-    clientCertReq.setSubject([
-      { name: "commonName", value: commonName },
-      { name: 'organizationName', value: process.env.HUNA_SERVER_HOSTNAME!, type: 'organizationName' }
-    ]);
-    clientCertReq.sign(clientKey);
+
     const clientCert = forge.pki.createCertificate();
-    clientCert.publicKey = clientCertReq.publicKey;
-    clientCert.serialNumber = "01";
+    clientCert.publicKey = keys.publicKey;
+    clientCert.serialNumber = "01" + crypto.randomBytes(19).toString("hex");
     clientCert.validity.notBefore = new Date();
     clientCert.validity.notAfter = new Date();
     clientCert.validity.notAfter.setFullYear(
       clientCert.validity.notBefore.getFullYear() + 50
     );
     clientCert.setIssuer(caCert.subject.attributes);
-    clientCert.setSubject(clientCertReq.subject.attributes);
+    clientCert.setSubject([
+      { shortName: "CN", value: commonName },
+      { shortName: "O", value: "Huna" },
+      { shortName: "OU", value: "IOT" },
+    ]);
     clientCert.setExtensions([
       { name: "basicConstraints", cA: false },
       {
@@ -32,6 +31,11 @@ export const tlsService = {
         keyEncipherment: true,
       },
       { name: "extKeyUsage", serverAuth: false, clientAuth: true },
+      {
+        name: "authorityKeyIdentifier",
+        authorityCertIssuer: true,
+        serialNumber: caCert.serialNumber,
+      },
     ]);
     clientCert.sign(caKey, forge.md.sha256.create());
     const clientCertPem = forge.pki.certificateToPem(clientCert);
