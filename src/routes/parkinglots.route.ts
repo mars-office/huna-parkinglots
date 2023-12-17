@@ -47,6 +47,7 @@ parkinglotsRouter.get(
       res.status(404).send({ global: ["api.validation.notFound"] });
       return;
     }
+    
     res.send({
       _id: parkingLot._id.toString(),
       clientCertificateCrt: parkingLot.clientCertificateCrt,
