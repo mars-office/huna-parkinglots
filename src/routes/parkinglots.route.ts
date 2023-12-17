@@ -51,7 +51,8 @@ parkinglotsRouter.get(
       _id: parkingLot._id.toString(),
       clientCertificateCrt: parkingLot.clientCertificateCrt,
       clientCertificateKey: parkingLot.clientCertificateKey,
-      caCrt: process.env.IOT_CA_CRT!
+      caCrt: process.env.IOT_CA_CRT!,
+      letsencryptCaCrt: process.env.LETSENCRYPT_CA!
     } as DownloadCertificateBundleResponseDto);
   }
 );
