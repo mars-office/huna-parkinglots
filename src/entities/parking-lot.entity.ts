@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { StatusEntity } from "./status.entity";
 
 export interface ParkingLotEntity {
   _id: ObjectId;
@@ -7,4 +8,6 @@ export interface ParkingLotEntity {
   lng: number;
   clientCertificateCrt: string;
   clientCertificateKey: string;
+  status?: StatusEntity;
+  lastStatusTimestamp?: number;
 }
