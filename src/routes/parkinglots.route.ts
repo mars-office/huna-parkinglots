@@ -21,7 +21,7 @@ parkinglotsRouter.get(
     const parkingLotsList = await db
       .collection<ParkingLotEntity>("parkinglots")
       .find()
-      .project<ParkingLotEntity>({ name: 1, lat: 1, lng: 1, status: 1, lastStatusHeartbeat: 1 })
+      .project<ParkingLotEntity>({ name: 1, lat: 1, lng: 1, status: 1, lastStatusTimestamp: 1 })
       .sort({ name: 1 })
       .toArray();
     res.send(
