@@ -13,6 +13,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       method: req.method.toUpperCase(),
       service: "huna-parkinglots",
       remoteAddress: req.ip,
+      type: 'oauth'
     },
   };
   const response = await axios.post(
