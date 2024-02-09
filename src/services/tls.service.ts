@@ -26,15 +26,18 @@ export const tlsService = {
       { name: "basicConstraints", cA: false },
       {
         name: "keyUsage",
-        keyCertSign: false,
+        keyCertSign: true,
         digitalSignature: true,
+        nonRepudiation: true,
         keyEncipherment: true,
+        dataEncipherment: true,
       },
-      { name: "extKeyUsage", serverAuth: false, clientAuth: true },
+      {
+        name: "subjectKeyIdentifier",
+      },
       {
         name: "authorityKeyIdentifier",
-        authorityCertIssuer: true,
-        serialNumber: caCert.serialNumber,
+        keyIdentifier: caCert.generateSubjectKeyIdentifier().getBytes(),
       },
     ]);
     clientCert.sign(caKey, forge.md.sha256.create());
