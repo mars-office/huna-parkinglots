@@ -8,9 +8,10 @@ export const mqttClient = mqtt.connect({
   port: 8883,
   ca: process.env.EMQX_CA_CRT,
   cert: process.env.EMQX_CLIENT_CRT,
+  clean: true,
   key: process.env.EMQX_CLIENT_KEY,
-  clientId:
-    process.env.HOSTNAME ||
+  protocolVersion: 5,
+  clientId: process.env.HOSTNAME ||
     "huna-parkinglots_" + Math.random().toString(16).substr(2, 8),
 });
 
@@ -49,4 +50,6 @@ mqttClient.on("message", (topic, payload) => {
   })();
 });
 
-mqttClient.subscribe("status/+");
+mqttClient.subscribe("$share/main/status/+", {
+  qos: 0
+});
