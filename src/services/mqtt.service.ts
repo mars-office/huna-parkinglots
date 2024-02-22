@@ -17,10 +17,16 @@ export const mqttClient = mqtt.connect({
 
 mqttClient.on("connect", () => {
   console.log("MQTT connected");
+  mqttClient.subscribe("$share/main/status/+", {
+    qos: 0
+  });
 });
 
 mqttClient.on("reconnect", () => {
   console.log("MQTT reconnected");
+  mqttClient.subscribe("$share/main/status/+", {
+    qos: 0
+  });
 });
 
 mqttClient.on("disconnect", () => {
@@ -48,8 +54,4 @@ mqttClient.on("message", (topic, payload) => {
       console.error(err);
     }
   })();
-});
-
-mqttClient.subscribe("$share/main/status/+", {
-  qos: 0
 });
